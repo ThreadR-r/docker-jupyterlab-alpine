@@ -24,6 +24,6 @@ RUN apk update \
 && mkdir /notebooks
 
 VOLUME /notebooks
-ENTRYPOINT /usr/bin/jupyter lab --no-browser --ip=0.0.0.0 --notebook-dir=/notebooks
+ENTRYPOINT /usr/bin/jupyter lab --no-browser --ip=0.0.0.0 --allow-root --notebook-dir=/notebooks
 EXPOSE 8888
 
