@@ -1,0 +1,27 @@
+sudo: required
+
+services:
+- docker
+
+language: bash
+
+script:
+- if [ -z "$TRAVIS_TAG" ]; then exit 0; fi
+# prepare qemu
+- docker run --rm --privileged multiarch/qemu-user-static:register --reset
+# get qemu-arm-static binary
+- >
+  QEMU_USER_STATIC_ARCH=arm &&
+  QEMU_USER_STATIC_DOWNLOAD_URL="https://github.com/multiarch/qemu-user-static/releases/download" &&
+  QEMU_USER_STATIC_LATEST_TAG=$(curl -s https://api.github.com/repos/multiarch/qemu-user-static/tags | grep 'name.*v[0-9]' | head -n 1 | cut -d '"' -f 4) &&
+  wget -O qemu-arm-static.tar.gz "${QEMU_USER_STATIC_DOWNLOAD_URL}/${QEMU_USER_STATIC_LATEST_TAG}/x86_64_qemu-${QEMU_USER_STATIC_ARCH}-static.tar.gz" &&
+  tar xzf qemu-arm-static.tar.gz
+# build image
+- docker build -t threadrr/jupyterlab-arm32v6-raspberry-pi:build .
+# push image
+- export TAG=$TRAVIS_TAG
+- docker login -u="$DOCKER_USER" -p="$DOCKER_PASS"
+- docker tag threadrr/jupyterlab-arm32v6-raspberry-pi:build threadrr/jupyterlab-arm32v6-raspberry-pi:$TAG
+- docker tag threadrr/jupyterlab-arm32v6-raspberry-pi:build threadrr/jupyterlab-arm32v6-raspberry-pi:latest
+- docker push threadrr/jupyterlab-arm32v6-raspberry-pi:$TAG
+- docker push threadrr/jupyterlab-arm32v6-raspberry-pi:latest
