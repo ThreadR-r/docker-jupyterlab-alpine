@@ -1,4 +1,5 @@
 FROM arm32v6/alpine:latest
+COPY qemu-arm-static /usr/bin/
 
 RUN apk add python3 py-pip
 
