@@ -1,7 +1,18 @@
 FROM arm32v6/alpine:latest
 COPY qemu-arm-static /usr/bin/
 
-RUN apk add python3
+RUN apk upgrade --no-cache \
+  && apk add --no-cache \
+    musl \
+    build-base \
+    python3 \
+    python3-dev \
+    postgresql-dev \
+    bash \
+    git \
+  && pip3 install --no-cache-dir --upgrade pip \
+  && rm -rf /var/cache/* \
+  && rm -rf /root/.cache/*
 
 RUN cd /usr/bin \
   && ln -sf python3 python \
@@ -9,8 +20,7 @@ RUN cd /usr/bin \
   && cd -
 
 # Install required packages
-RUN apk add --update --virtual=.build-dependencies alpine-sdk nodejs ca-certificates musl-dev gcc python-dev make cmake g++ gfortran libpng-dev freetype-dev libxml2-dev libxslt-dev linux-headers zeromq-dev
-RUN apk add --update git
+RUN apk add --update --virtual=.build-dependencies alpine-sdk nodejs ca-certificates musl-dev gcc make cmake g++ gfortran libpng-dev freetype-dev libxml2-dev libxslt-dev linux-headers zeromq-dev
 
 # Install Jupyter
 RUN pip install jupyter
