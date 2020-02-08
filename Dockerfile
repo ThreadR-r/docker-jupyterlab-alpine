@@ -12,7 +12,8 @@ RUN apk upgrade --no-cache \
     git \
   && pip3 install --no-cache-dir --upgrade pip \
   && rm -rf /var/cache/* \
-  && rm -rf /root/.cache/*
+  && rm -rf /root/.cache/* \
+  && mkdir /var/cache/apk
 
 RUN cd /usr/bin \
   && ln -sf python3 python \
